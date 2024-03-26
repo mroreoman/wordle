@@ -105,7 +105,7 @@ root = tk.Tk()
 
 keyboard_frames = [tk.Frame(root) for i in range(3)]
 keyboard = ['zxcvbnm', 'asdfghjkl', 'qwertyuiop']
-for i, row in enumerate(keyboard): # TODO: update this every guess
+for i, row in enumerate(keyboard):
     keyboard_frames[i].pack(side=tk.BOTTOM)
     for letter in row:
         label = tk.Label(keyboard_frames[i], text=letter, bg='white')
