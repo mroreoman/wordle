@@ -101,7 +101,6 @@ def submit():
         label.pack(side=tk.LEFT)
 
 root = tk.Tk()
-# root.geometry('600x400')
 
 keyboard_frames = [tk.Frame(root) for i in range(3)]
 keyboard = ['zxcvbnm', 'asdfghjkl', 'qwertyuiop']
