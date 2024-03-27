@@ -78,7 +78,7 @@ def submit():
     guesses += 1
     wordLettersC = wordLetters.copy()
 
-    guess_frame = tk.Frame(root)
+    guess_frame = tk.Frame(main)
     guess_frame.pack(side=tk.TOP)
 
     for i, letter in enumerate(guess):
@@ -97,37 +97,38 @@ def submit():
             if alphabet[letter].cget('bg') == 'white':
                 alphabet[letter].config(bg='yellow')
         
-        label = tk.Label(guess_frame, text = letter)
-        label.config(bg=color, width=2)
-        label.pack(side=tk.LEFT)
+        label = tk.Label(guess_frame, text=letter, bg=color, width=2, pady=5)
+        label.pack(side=tk.LEFT, padx=2, pady=2)
 
     if guess == word:
         entry_frame.pack_forget()
+        error.config(text=str(guesses) + " guesses!")
 
 root = tk.Tk()
 root.title("wordle")
-root.geometry('300x400')
 
-keyboard_frames = [tk.Frame(root) for i in range(3)]
+main = tk.Frame()
+main.pack(padx=3, pady=3)
+
+
+keyboard_frames = [tk.Frame(main) for i in range(3)]
 keyboard = ['zxcvbnm', 'asdfghjkl', 'qwertyuiop']
 for i, row in enumerate(keyboard):
     keyboard_frames[i].pack(side=tk.BOTTOM)
     for letter in row:
-        label = tk.Label(keyboard_frames[i], text=letter, bg='white', width=2)
+        label = tk.Label(keyboard_frames[i], text=letter, bg='white', width=2, pady=5)
         label.pack(side=tk.LEFT)
         alphabet[letter] = label
 
-entry_frame = tk.Frame(root)
+entry_frame = tk.Frame(main)
 guess_var = tk.StringVar()
-entry_label = tk.Label(entry_frame, text="guess :")
 entry = tk.Entry(entry_frame, textvariable=guess_var)
 btn = tk.Button(entry_frame, text="submit", command=submit)
-error = tk.Label(root)
+error = tk.Label(main)
 
-entry_frame.pack(side=tk.BOTTOM)
-entry_label.pack(side=tk.LEFT)
-entry.pack(side=tk.LEFT)
-btn.pack(side=tk.LEFT)
-error.pack(side=tk.BOTTOM)
+entry_frame.pack(side=tk.BOTTOM, pady=5)
+entry.pack(side=tk.LEFT, padx=5)
+btn.pack(side=tk.LEFT, padx=5)
+error.pack(side=tk.BOTTOM, pady=5)
 
-root.mainloop()
+main.mainloop()
