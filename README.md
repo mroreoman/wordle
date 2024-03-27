@@ -1,1 +1,1 @@
-gui wordle
+tkinter wordle
