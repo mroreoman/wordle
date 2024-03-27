@@ -2,9 +2,9 @@ import random
 import tkinter as tk
 
 alphabet = {
+    'a':None,
     'b':None,
     'c':None,
-    'a':None,
     'd':None,
     'e':None,
     'f':None,
@@ -47,66 +47,52 @@ with open(r"wordleDictionary\wordle-Ta.txt", "r") as file:
             break
         wordleTa.append(line.strip())
 
-# word = random.choice(wordleLa)
-word = "fedex" #exeme feese elect peels
+word = random.choice(wordleLa)
+
+wordLetters = {}
+for letter in word:
+    if letter not in wordLetters:
+        wordLetters.update({letter:0})
+    wordLetters[letter] += 1
+
 guesses = 0
 
 def submit():
     global guesses
-    global alphabet
 
     guess = guess_var.get()
 
     if not guess.isalpha():
         error.config(text="guess must be only letters")
         return
-    elif len(guess) != 5:
-        error.config(text="guess must be 5 letters")
+    elif len(guess) != len(word):
+        error.config(text=f"guess must be {len(word)} letters")
         return
     elif not (guess in wordleLa or guess in wordleTa):
         error.config(text="guess is not in word list")
         return
     
     error.config(text="")
+    entry.delete(0, 'end')
 
     guesses += 1
-
-    entry.delete(0, 'end')
+    wordLettersC = wordLetters.copy()
 
     guess_frame = tk.Frame(root)
     guess_frame.pack(side=tk.TOP)
 
-    color = ''
     for i, letter in enumerate(guess):
-        if letter not in word:
+        color = ''
+
+        if letter not in word or wordLettersC[letter] == 0:
             color = 'grey'
             alphabet[letter].config(bg='grey')
         elif letter == word[i]:
+            wordLettersC[letter] -= 1
             color = 'green'
             alphabet[letter].config(bg='green')
-        elif guess[i:].count(letter) > word.count(letter):
-            # TODO: something wrong!!!! word = fedex, try exeme feese elect peels
-            
-            # cnt = 0
-            # for i, a in enumerate(guess):
-            #     if a == letter and a == word[i]:
-            #         cnt += 1
-            # print(guess.count(letter))
-            # print(word.count(letter) - cnt)
-
-            # color = 'grey'
-            # if alphabet[letter].cget('bg') == 'white':
-            #     alphabet[letter].config(bg='grey')
-            
-            if guess[:i+1].count(letter) - sum([1 for a, b in zip(word, guess) if a == b and a == letter]) > word.count(letter): #subtract number of green letters after i
-                color = 'grey'
-                if alphabet[letter].cget('bg') == 'white':
-                    alphabet[letter].config(bg='grey')
-            else:
-                color = 'yellow'
-                if alphabet[letter].cget('bg') == 'white':
-                    alphabet[letter].config(bg='yellow')
         else:
+            wordLettersC[letter] -= 1
             color = 'yellow'
             if alphabet[letter].cget('bg') == 'white':
                 alphabet[letter].config(bg='yellow')
@@ -120,7 +106,7 @@ def submit():
 
 root = tk.Tk()
 root.title("wordle")
-root.geometry('1920x1080')
+root.geometry('300x400')
 
 keyboard_frames = [tk.Frame(root) for i in range(3)]
 keyboard = ['zxcvbnm', 'asdfghjkl', 'qwertyuiop']
