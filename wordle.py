@@ -31,7 +31,6 @@ alphabet = {
     'z':None
 }
 
-
 wordleLa = []
 wordleTa = []
 
@@ -72,6 +71,15 @@ for letter in word:
     wordLetters[letter] += 1
 
 guesses = 0
+clear = None
+
+def set_message(text, flash=False):
+    global clear
+    if clear is not None:
+        root.after_cancel(clear)
+    message.config(text=text)
+    if flash:
+        clear = root.after(1000, lambda: message.config(text=""))
 
 def submit(_=None):
     global guesses
@@ -79,16 +87,16 @@ def submit(_=None):
     guess = guess_var.get().casefold()
 
     if not guess.isalpha():
-        error.config(text="guess must be only letters")
+        set_message("guess must be only letters", True)
         return
     elif len(guess) != len(word):
-        error.config(text=f"guess must be {len(word)} letters")
+        set_message(f"guess must be {len(word)} letters", True)
         return
     elif not (guess in wordleLa or guess in wordleTa):
-        error.config(text="guess is not in word list")
+        set_message("guess is not in word list", True)
         return
     
-    error.config(text="")
+    set_message("")
     entry.delete(0, 'end')
 
     guesses += 1
@@ -118,7 +126,7 @@ def submit(_=None):
 
     if guess == word:
         entry_frame.pack_forget()
-        error.config(text=str(guesses) + (" guess!" if guesses == 1 else " guesses!"))
+        set_message(str(guesses) + (" guess!" if guesses == 1 else " guesses!"))
 
 root = tk.Tk()
 root.title("wordle")
@@ -140,11 +148,11 @@ guess_var = tk.StringVar()
 entry = tk.Entry(entry_frame, textvariable=guess_var)
 btn = tk.Button(entry_frame, text="submit")
 root.bind('<Return>', submit)
-error = tk.Label(main)
+message = tk.Label(main)
 
 entry_frame.pack(side=tk.BOTTOM, pady=5)
 entry.pack(side=tk.LEFT, padx=5)
 btn.pack(side=tk.LEFT, padx=5)
-error.pack(side=tk.BOTTOM, pady=5)
+message.pack(side=tk.BOTTOM, pady=5)
 
 main.mainloop()
