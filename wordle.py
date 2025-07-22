@@ -1,4 +1,5 @@
 import random
+import sys
 import tkinter as tk
 
 alphabet = {
@@ -30,6 +31,7 @@ alphabet = {
     'z':None
 }
 
+
 wordleLa = []
 wordleTa = []
 
@@ -38,16 +40,30 @@ with open(r"wordleDictionary\wordle-La.txt", "r") as file:
         line = file.readline()
         if not line:
             break
-        wordleLa.append(line.strip())
+        wordleLa.append(line.strip().casefold())
 
 with open(r"wordleDictionary\wordle-Ta.txt", "r") as file:
     while True:
         line = file.readline()
         if not line:
             break
-        wordleTa.append(line.strip())
+        wordleTa.append(line.strip().casefold())
 
-word = random.choice(wordleLa)
+if len(sys.argv) > 1:
+    temp = sys.argv[1]
+    if not temp.isalpha():
+        print("word must be only letters")
+        sys.exit()
+    elif len(temp) != 5:
+        print("guess must be 5 letters")
+        sys.exit()
+    elif not (temp in wordleLa or temp in wordleTa):
+        print("guess is not in word list")
+        sys.exit()
+    else:
+        word = temp.casefold()
+else:
+    word = random.choice(wordleLa).casefold()
 
 wordLetters = {}
 for letter in word:
@@ -57,10 +73,10 @@ for letter in word:
 
 guesses = 0
 
-def submit():
+def submit(_=None):
     global guesses
 
-    guess = guess_var.get()
+    guess = guess_var.get().casefold()
 
     if not guess.isalpha():
         error.config(text="guess must be only letters")
@@ -97,12 +113,12 @@ def submit():
             if alphabet[letter].cget('bg') == 'white':
                 alphabet[letter].config(bg='yellow')
         
-        label = tk.Label(guess_frame, text=letter, bg=color, width=2, pady=5)
+        label = tk.Label(guess_frame, text=letter.upper(), bg=color, width=2, pady=5)
         label.pack(side=tk.LEFT, padx=2, pady=2)
 
     if guess == word:
         entry_frame.pack_forget()
-        error.config(text=str(guesses) + " guesses!")
+        error.config(text=str(guesses) + (" guess!" if guesses == 1 else " guesses!"))
 
 root = tk.Tk()
 root.title("wordle")
@@ -110,20 +126,20 @@ root.title("wordle")
 main = tk.Frame()
 main.pack(padx=3, pady=3)
 
-
 keyboard_frames = [tk.Frame(main) for i in range(3)]
 keyboard = ['zxcvbnm', 'asdfghjkl', 'qwertyuiop']
 for i, row in enumerate(keyboard):
     keyboard_frames[i].pack(side=tk.BOTTOM)
     for letter in row:
-        label = tk.Label(keyboard_frames[i], text=letter, bg='white', width=2, pady=5)
+        label = tk.Label(keyboard_frames[i], text=letter.upper(), bg='white', width=2, pady=5)
         label.pack(side=tk.LEFT)
         alphabet[letter] = label
 
 entry_frame = tk.Frame(main)
 guess_var = tk.StringVar()
 entry = tk.Entry(entry_frame, textvariable=guess_var)
-btn = tk.Button(entry_frame, text="submit", command=submit)
+btn = tk.Button(entry_frame, text="submit")
+root.bind('<Return>', submit)
 error = tk.Label(main)
 
 entry_frame.pack(side=tk.BOTTOM, pady=5)
